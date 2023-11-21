@@ -1,45 +1,48 @@
 package Assignments;
 
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.*;
+class Pair{
+
+    int a;
+    int b;
+    Pair(int a, int b){
+        this.a = a;
+        this.b = b;
+    }
+}
 
 public class MergeIntervals {
 
-    static int[][] merge(int[][] intervals){
-        List<Integer> indexes = new ArrayList<>();
-        for(int i = 0; i<intervals.length; i++){
-            int start = intervals[i][0]; //1
-            int end = intervals[i][1]; //4
-            for(int j = i+1; j < intervals.length; j++){
-                if(intervals[j][0] >= 0 && intervals[j][1] >=0 && end >= intervals[j][0]){ // 0 1
-                    if(start >= intervals[j][0]){
-                        start = intervals[j][0];
-                    }
-                    if(end <= intervals[j][1]){
-                        end = intervals[j][1];
-                    }
-                    intervals[j][0] = -1;
-                    intervals[j][1] = -1;
-                    indexes.add(j);
-                }
+    int[][] merge(int[][] intervals){
+        Arrays.sort(intervals, (a, b)-> Integer.compare(a[0], b[0]));
+        int start = intervals[0][0];
+        int end = intervals[0][1];
+        List<Pair> list= new ArrayList<Pair>();
+        for(int i = 1; i<intervals.length; i++){
+            if(intervals[i][0] <= end){
+                end = Math.max(end, intervals[i][1]);
+            }else{
+                list.add(new Pair(start, end));
+                start = intervals[i][0];
+                end = intervals[i][1];
             }
-            intervals[i][0] = start;
-            intervals[i][1] = end;
-            System.out.println(start+" "+end);
         }
-        int[][] ans = new int[intervals.length-indexes.size()][2];
-        int j = 0;
-        for(int i = 0; i<intervals.length; i++){
-            if(!indexes.contains(i)){
-                ans[j][0] = intervals[i][0];
-                ans[j][1] = intervals[i][1];
-                j++;
-            }
+        list.add(new Pair(start, end));
+        int [][] ans = new int[list.size()][2];
+        for(int i = 0; i<list.size(); i++){
+            Pair p = list.get(i);
+            ans[i][0] = p.a;
+            ans[i][1] = p.b;
         }
         return ans;
     }
 
     public static void main(String[] args){
-        merge(new int[][]{{1,4},{0,1}});
+        MergeIntervals mi = new MergeIntervals();
+        int[][] ans = mi.merge(new int[][]{{1,4},{0,4}});
+        for(int[] arr: ans){
+            System.out.println("["+arr[0]+","+arr[1]+"]");
+        }
     }
 }
